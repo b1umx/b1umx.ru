@@ -1,3 +1,26 @@
-baseURL = "http://example.org/"
-languageCode = "en-us"
-title = "My New Hugo Site"
+baseURL = "https://b1umx.ru/"
+languageCode = "ru"
+defaultContentLanguage = "ru"
+title = "b1umx"
+theme = "hello-friend"
+
+[languages]
+    [languages.ru]
+        title = "b1umx"
+        subtitle = "yet another blog"
+        keywords = "it, programming, cooking"
+        copyright = "b1umx"
+        menuMore = "Показать еще"
+        writtenBy = "Автор"
+        readMore = "Далее"
+        readOtherPosts = "Другие посты"
+        newerPosts = "Более новые"
+        olderPosts = "Более старые"
+        minuteReadingTime = "мин."
+        dateFormatSingle = "02.01.2006"
+        dateFormatList = "02.01.2006"
+
+        [params.logo]
+            logoText = "b1umx"
+            logoHomeLink = "/"
+

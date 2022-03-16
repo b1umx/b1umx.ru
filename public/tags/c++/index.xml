@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43; on b1umx</title>
+    
+    
+    
+    <link>https://b1umx.ru/tags/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on b1umx</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>ru</language>
+    <copyright>b1umx</copyright>
+    <lastBuildDate>Wed, 16 Mar 2022 00:00:00 +0000</lastBuildDate>
+    
+	<atom:link href="https://b1umx.ru/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Прятки со ссылками в шаблонах C&#43;&#43;</title>
+      <link>https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/</link>
+      <pubDate>Wed, 16 Mar 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/</guid>
+      <description>
+        
+          &lt;img src=&#34;https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/cover.png&#34;/&gt;
+          
+        
+        
+        
+          Когда я начал изучать шаблоны в C++, то часто натыкался на использование *метафункций* `std::decay`, `std::remove_reference` и `std::remove_cv`. Однако искусство их применения от меня ускользало. Я не мог прочувствовать те моменты, когда пора расчехлять эти инструменты... До одного вечера, проведенного за отладчиком.
+          
+        
+        </description>
+    </item>
+    
+  </channel>
+</rss>
