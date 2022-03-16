@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    
+      <title>
+        Прятки со ссылками в шаблонах C&#43;&#43; ::
+        b1umx — yet another blog
+      </title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta
+  name="description"
+  content="Когда я начал изучать шаблоны в C&#43;&#43;, то часто натыкался на использование метафункций std::decay, std::remove_reference и std::remove_cv. Однако искусство их применения от меня ускользало. Я не мог прочувствовать те моменты, когда пора расчехлять эти инструменты&amp;hellip; До одного вечера, проведенного за отладчиком.
+Придумал я для рабочего проекта класс. Использовал технику стирания типа (type erasure). Как в std::function, только вместо operator() мне нужны были другие функции в интерфейсе. Об этом решении как-нибудь в следующий раз расскажу."
+/>
+<meta
+  name="keywords"
+  content="it, programming, cooking"
+/>
+<meta name="robots" content="noodp" />
+<link rel="canonical" href="https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/" />
+
+
+
+
+
+<link rel="stylesheet" href="https://b1umx.ru/assets/style.css" />
+
+<link rel="stylesheet" href="https://b1umx.ru/style.css" />
+
+
+<link
+  rel="apple-touch-icon-precomposed"
+  sizes="144x144"
+  href="https://b1umx.ru/img/apple-touch-icon-144-precomposed.png"
+/>
+<link rel="shortcut icon" href="https://b1umx.ru/img/favicon.png" />
+
+
+<link href="https://b1umx.ru/assets/fonts/Inter-Italic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="https://b1umx.ru/assets/fonts/Inter-Regular.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="https://b1umx.ru/assets/fonts/Inter-Medium.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="https://b1umx.ru/assets/fonts/Inter-MediumItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="https://b1umx.ru/assets/fonts/Inter-Bold.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+<link href="https://b1umx.ru/assets/fonts/Inter-BoldItalic.woff2" rel="preload" type="font/woff2" as="font" crossorigin="">
+
+
+<meta name="twitter:card" content="summary_large_image"/>
+<meta name="twitter:image" content="https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/cover.png"/>
+<meta name="twitter:title" content="Прятки со ссылками в шаблонах C&#43;&#43;"/>
+<meta name="twitter:description" content="Когда я начал изучать шаблоны в C&#43;&#43;, то часто натыкался на использование *метафункций* `std::decay`, `std::remove_reference` и `std::remove_cv`. Однако искусство их применения от меня ускользало. Я не мог прочувствовать те моменты, когда пора расчехлять эти инструменты... До одного вечера, проведенного за отладчиком."/>
+
+
+
+<meta property="og:title" content="Прятки со ссылками в шаблонах C&#43;&#43;" />
+<meta property="og:description" content="Когда я начал изучать шаблоны в C&#43;&#43;, то часто натыкался на использование *метафункций* `std::decay`, `std::remove_reference` и `std::remove_cv`. Однако искусство их применения от меня ускользало. Я не мог прочувствовать те моменты, когда пора расчехлять эти инструменты... До одного вечера, проведенного за отладчиком." />
+<meta property="og:type" content="article" />
+<meta property="og:url" content="https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/" /><meta property="og:image" content="https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/cover.png"/><meta property="article:section" content="posts" />
+<meta property="article:published_time" content="2022-03-16T00:00:00+00:00" />
+<meta property="article:modified_time" content="2022-03-16T00:00:00+00:00" /><meta property="og:site_name" content="b1umx" />
+
+
+
+
+
+
+
+  </head>
+  <body class="dark-theme">
+    <div class="container">
+      <header class="header">
+  <span class="header__inner">
+    <a
+  href="/"
+  class="logo"
+  style="text-decoration: none;"
+>
+  
+    <span class="logo__mark"><svg xmlns="http://www.w3.org/2000/svg" class="greater-icon" viewBox="0 0 44 44">
+  <path fill="none" d="M15 8l14.729 14.382L15 35.367" />
+</svg>
+</span>
+    <span class="logo__text"
+      >b1umx</span
+    >
+    <span class="logo__cursor"></span>
+  
+</a>
+
+    <span class="header__right">
+      
+      <span class="theme-toggle">
+        <svg
+  class="theme-toggler"
+  width="24"
+  height="24"
+  viewBox="0 0 48 48"
+  fill="none"
+  xmlns="http://www.w3.org/2000/svg"
+>
+  <path
+    d="M22 41C32.4934 41 41 32.4934 41 22C41 11.5066 32.4934 3 22
+  3C11.5066 3 3 11.5066 3 22C3 32.4934 11.5066 41 22 41ZM7 22C7
+  13.7157 13.7157 7 22 7V37C13.7157 37 7 30.2843 7 22Z"
+  />
+</svg>
+
+      </span>
+    </span>
+  </span>
+</header>
+
+
+      <div class="content">
+        
+  
+  
+
+  <div class="post">
+    <h1 class="post-title">Прятки со ссылками в шаблонах C++</h1>
+    <div class="post-meta">
+      
+        <span class="post-date">
+          16.03.2022
+        </span>
+
+        
+          
+        
+      
+
+      
+
+
+      
+    </div>
+
+    
+      <span class="post-tags">
+        
+          <a href="https://b1umx.ru/tags/c&#43;&#43;/">#C&#43;&#43;</a>&nbsp;
+        
+          <a href="https://b1umx.ru/tags/templates/">#templates</a>&nbsp;
+        
+          <a href="https://b1umx.ru/tags/bugs/">#bugs</a>&nbsp;
+        
+      </span>
+    
+
+    
+      <figure class="post-cover">
+  
+    <img src="https://b1umx.ru/posts/hide-n-seek-with-refs-in-cpp-templates/cover.png" alt="std::decay"/>
+  
+
+  
+</figure>
+
+    
+
+    <div class="post-content">
+      
+      <p>Когда я начал изучать шаблоны в C++, то часто натыкался на использование <em>метафункций</em> <code>std::decay</code>, <code>std::remove_reference</code> и <code>std::remove_cv</code>. Однако искусство их применения от меня ускользало. Я не мог прочувствовать те моменты, когда пора расчехлять эти инструменты&hellip; До одного вечера, проведенного за отладчиком.</p>
+<p>Придумал я для рабочего проекта класс. Использовал технику <em>стирания типа (type erasure)</em>. Как в <code>std::function</code>, только вместо <code>operator()</code> мне нужны были другие функции в интерфейсе. Об этом решении как-нибудь в следующий раз расскажу. Написал рабочую реализацию, начал тестировать, а один тест падает с segmentation fault. Ну, дело обычное, подумал я и включил отладчик. Не тут-то было! Где происходит падение, отследить не получается: стек вызовов ни о чем не говорит. И так вертел я, и сяк, отлаживал пошагово, ставил выводы в лог в разных точках - ничего не помогает. Полдня потратил на поиски причины ошибки. В какой-то момент обложил принтами в лог все, что только возможно и, наконец, нашел. Ошибка оказалась до смешного классической - висячая сслыка.</p>
+<p>Проблема возникла из-за шаблонной функции с аргументом в виде универсальной ссылки. Внутри функции конструировался объект в динамической памяти, и в вызывающий код передавался как указатель на родительский класс. Схематично проиллюстрировать это можно следующим образом</p>
+
+  <figure class="center" >
+    <img src="hang_ref_schema.png"  alt="Schema"   style="border-radius: 8px;"  />
+    
+  </figure>
+
+
+<p>Покончим с прелюдией. В тот вечер я смог продвинуться в понимании метафункций стандартной библиотеки и теперь хочу поделиться своим опытом. От слов к примерам!</p>
+<p>Одно из типичных применений шаблона класса - контейнер, который добавляет хранимому объекту функциональность, не связанную с типом этого объекта. Представим, что мы хотим отслеживать факт изменения объектов различных полезных типов и при необходимости возвращать их к исходному состоянию. Создадим шаблонный класс-обертку <code>Restorable&lt;T&gt;</code>. Он будет наследовать абстрактному классу <code>Entity</code>, в котором мы задекларируем интерфейс.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="128349765" type="checkbox"  />
+    <label for="128349765">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">Restorable</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+class Entity {
+public:
+	virtual void save() const = 0;
+	virtual std::string toString() const = 0;
+};
+
+
+template&lt;typename T&gt;
+class Restorable: public Entity {
+public:
+	Restorable(const T &amp;value):
+		_actual(value),
+		_original(value) {
+	}
+
+	bool isChanged() const {
+		return _actual != _original;
+	}
+
+	void restore() {
+		_actual = _original;
+	}  
+
+	const T &amp; value() const {
+		return _actual;
+	}
+
+	T &amp; value() {
+		return _actual;
+	}
+	
+	void save() const override {
+		return _actual.save();
+	}
+	
+	std::string toString() const override {
+		return _actual.toString();
+	}
+}
+
+private:
+	T _actual;
+	T _original;
+};
+</code></pre>
+  </div>
+
+
+<p><em>От оборачиваемого типа нам потребуются функции-члены <code>save()</code> и <code>toString()</code>, а также оператор неравенства <code>!=</code>, копирующий конструктор и оператор копирующего присваивания.</em></p>
+<p>Допустим, что перед созданием <code>Restorable</code> значений мы хотим дополнительно обрабатывать все объекты. Тогда нам понадобиться универсальная функция <code>makeRestorable&lt;T&gt;</code>. В подобной функции можно, например, сгенерировать ID объекта, вывести полезную информацию в лог или сохранить объект в базе данных. Заодно сделаем еще более абстрактную функцию <code>makeEntity&lt;T&gt;</code>, которая будет возвращать указатель на объект <code>Entity</code>, созданный в динамической памяти.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="942718365" type="checkbox"  />
+    <label for="942718365">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">make-функции</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+template&lt;typename T&gt;
+Restorable&lt;T&gt; makeRestorable(T &amp;&amp;sample) {
+	sample.save();
+	return Restorable&lt;T&gt;(std::forward&lt;T&gt;(sample));
+}
+
+template&lt;typename T&gt;
+std::unique_ptr&lt;Entity&gt; makeEntity(T &amp;&amp;sample) {
+	return std::make_unique&lt;Restorable&lt;T&gt;&gt;(makeRestorable(std::forward&lt;T&gt;(sample)));
+}
+</code></pre>
+  </div>
+
+
+<p>Пока реализация выглядит стройной. Мы довольны собой и пробуем поиграть с написанным классом.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="837291645" type="checkbox"  />
+    <label for="837291645">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+struct S {
+	int id = 0;
+	std::string name;
+
+	void save() const {
+		std::cout &lt;&lt; &#34;Сохраняю S #&#34; &lt;&lt; id &lt;&lt; &#34;...\n&#34;;
+		// ...
+	}
+	
+	std::string toString() const {
+		std::stringstream ss;
+		ss &lt;&lt; &#34;S[ #&#34; &lt;&lt; std::to_string(id) &lt;&lt; &#39; &#39; &lt;&lt; name &lt;&lt; &#34; ]&#34;;
+		return ss.str();
+	}
+};
+
+int main() {
+	S s;
+
+	s = { 1, &#34;alpha&#34; };
+	auto r1 = makeRestorable(s);
+	std::cout &lt;&lt; &#34;r1 = &#34; &lt;&lt; r1.toString() &lt;&lt; &#39;\n&#39;;
+
+	s = { 2, &#34;beta&#34; };
+	auto r2 = makeRestorable(s);
+	std::cout &lt;&lt; &#34;r2 = &#34; &lt;&lt; r2.toString() &lt;&lt; &#34;\n\n&#34;;
+
+	std::cout &lt;&lt; &#34;r1 = &#34; &lt;&lt; r1.toString() &lt;&lt; &#39;\n&#39;;
+	std::cout &lt;&lt; &#34;r2 = &#34; &lt;&lt; r2.toString() &lt;&lt; &#34;\n\n&#34;;
+}
+</code></pre>
+  </div>
+
+
+<p>Вывод программы вас удивит, если вы не закаленный шаблонами программист. По какой-то загадочной причине после создания <code>r2</code> изменилось значение в <code>r1</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #1...  
+r1 = S[ #1 alpha ]  
+Сохраняю S #2...  
+r2 = S[ #2 beta ]  
+  
+r1 = S[ #2 beta ]  
+r2 = S[ #2 beta ]
+</code></pre></div><p>Давайте еще усугубим ситуацию. Представим, что нам надо реализовать загрузку объектов по сети. Смоделируем это поведение с помощью своеобразной функции <code>loadEntity</code>.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="985617342" type="checkbox"  />
+    <label for="985617342">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+std::unique_ptr&lt;Entity&gt; loadEntity() {
+	S s { 3, &#34;gamma&#34; };
+	return makeEntity(s);
+}
+
+int main() {
+	// ...
+	
+	auto r3 = loadEntity();
+	std::cout &lt;&lt; &#34;r3 = &#34; &lt;&lt; r3-&gt;toString() &lt;&lt; &#34;\n\n&#34;;
+}
+</code></pre>
+  </div>
+
+
+<p>Вот и обещанный сегфолт!</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">...
+Сохраняю S #3...
+zsh: segmentation fault (core dumped)  ./tmpl_ref
+</code></pre></div><p>В чем же причина такого поведения? Взглянем еще раз на пример с <code>r1</code> и <code>r2</code>. После создания <code>r2</code>, а точнее после присвоения нового значения переменной <code>s</code> изменилось и значение внутри <code>r1</code>. Интуиция может подсказать, что в деле замешаны ссылки. Давайте проверим нашу гипотезу. Проанализируем инстанцированный тип объекта <code>r1</code>.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="716325948" type="checkbox"  />
+    <label for="716325948">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+int main() {
+	S s;
+	
+	s = { 1, &#34;alpha&#34; };
+	auto r1 = makeRestorable(s);
+	std::cout
+		&lt;&lt; std::boolalpha
+		&lt;&lt; &#34;Тип r1 - Restorable&lt;S&gt;? - &#34;
+		&lt;&lt; std::is_same_v&lt;decltype(r1), Restorable&lt;S&gt;&gt; &lt;&lt; &#39;\n&#39;
+		&lt;&lt; &#34;Тип r1 - Restorable&lt;S&amp;&gt;? - &#34;
+		&lt;&lt; std::is_same_v&lt;decltype(r1), Restorable&lt;S&amp;&gt;&gt; &lt;&lt; &#39;\n&#39;;
+	
+	// выведет:
+	// Сохраняю S #1...
+	// Тип r1 - Restorable&lt;S&gt;? - false
+    // Тип r1 - Restorable&lt;S&amp;&gt;? - true
+}
+</code></pre>
+  </div>
+
+
+<p>Так и есть. Вместо обертки для объекта типа <code>S</code> мы получили обертку для ссылки на объект <code>S&amp;</code>. Это явно не то, что мы подразумевали. Нам нужен способ сказать компилятору, что нам нужны &ldquo;чистые&rdquo; значения, даже если в функцию передаются значения по ссылке. Для этих целей в стандартной библиотеке предусмотрена метафункция <code>std::remove_reference</code>. Применим ее.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="371862594" type="checkbox"  />
+    <label for="371862594">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">std::remove_reference</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+template&lt;typename T&gt;
+Restorable&lt;std::remove_reference_t&lt;T&gt;&gt; makeRestorable(T&amp;&amp; sample) {
+	sample.save();
+	return Restorable&lt;std::remove_reference_t&lt;T&gt;&gt;(std::forward&lt;T&gt;(sample));
+}
+
+template&lt;typename T&gt;
+std::unique_ptr&lt;Entity&gt; makeEntity(T&amp;&amp; sample) {
+	return std::make_unique&lt;Restorable&lt;std::remove_reference_t&lt;T&gt;&gt;&gt;(makeRestorable(std::forward&lt;T&gt;(sample)));
+}
+</code></pre>
+  </div>
+
+
+<p>После запуска обновленной программы, терминал нам покажет следующий вывод</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #1...  
+r1 = S[ #1 alpha ]  
+Сохраняю S #2...  
+r2 = S[ #2 beta ]  
+  
+r1 = S[ #1 alpha ]  
+r2 = S[ #2 beta ]  
+  
+Сохраняю S #3...  
+r3 = S[ #3 gamma ]
+</code></pre></div><p>Победа! Но полная ли? Что если мы недавно прочитали &ldquo;Эффективное использование C++&rdquo; Скотта Мэйерса и помним правило 3: везде использовать <code>const</code>? А тут еще и осадочек остался после работы с изменяемой переменной <code>s</code> из предыдущего примера.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="864231597" type="checkbox"  />
+    <label for="864231597">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+int main() {
+	// ...
+	
+	const S cs { 4, &#34;delta&#34; };
+	auto r4 = makeRestorable(cs);
+	std::cout &lt;&lt; &#34;r4 = &#34; &lt;&lt; r4.toString() &lt;&lt; &#39;\n&#39;;
+	
+	r4.value().name = &#34;delta (upd.)&#34;;
+	std::cout &lt;&lt; &#34;r4 = &#34; &lt;&lt; r4.toString() &lt;&lt; &#39;\n&#39;;
+}
+</code></pre>
+  </div>
+
+
+<p>Компилятор спешит вас разочаровать огромной простыней ошибок. Самая суть в этих строчках</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">decay.cpp: In function ‘int main()’:  
+decay.cpp:176:49: error: no match for ‘operator=’ (operand types are ‘const string’ {aka ‘const std::__cxx11::basic_string&lt;char&gt;’} a  
+nd ‘std::string’ {aka ‘std::__cxx11::basic_string&lt;char&gt;’})  
+ 176 |     r4.value().name = std::string(&#34;delta (upd.)&#34;);  
+     |
+</code></pre></div><p>Мы не можем присвоить <code>const</code> члену объекта новое значение. Оказывается, обобщенный тип <code>T</code> может вычисляться не только как ссылка на тип, но и как неизменный объект <code>[T = const S]</code>.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="324795681" type="checkbox"  />
+    <label for="324795681">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+int main() {
+	// ...
+	
+	const S cs { 4, &#34;delta&#34; };
+	auto r4 = makeRestorable(cs);
+	std::cout
+		&lt;&lt; std::boolalpha
+		&lt;&lt; &#34;Тип r4 - Restorable&lt;const S&gt;? - &#34;
+		&lt;&lt; std::is_same_v&lt;decltype(r4), Restorable&lt;const S&gt;&gt; &lt;&lt; &#39;\n&#39;;
+	
+	// выводит:
+	// Сохраняю S #4...  
+	// Тип r4 - Restorable&lt;const S&gt;? - true
+}
+</code></pre>
+  </div>
+
+
+<p>Чтобы окончательно исправить ситуацию, позовем верного соратника <code>std::remove_reference</code> – метафункцию <code>std::remove_cv</code>. Она удаляет у типа квалификаторы <code>const</code> и <code>volatile</code>.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="128694753" type="checkbox"  />
+    <label for="128694753">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">std::remove_cv</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+template&lt;typename T&gt;
+Restorable&lt;std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt;&gt;&gt; makeRestorable(T&amp;&amp; sample) {
+	sample.save();
+	return Restorable&lt;std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt;&gt;&gt;(std::forward&lt;T&gt;(sample));
+}
+
+template&lt;typename T&gt;
+std::unique_ptr&lt;Entity&gt; makeEntity(T&amp;&amp; sample) {
+	return std::make_unique&lt;Restorable&lt;std::remove_cv_t&lt;std::remove_reference_t&lt;T&gt;&gt;&gt;&gt;(makeRestorable(std::forward&lt;T&gt;(sample)));
+}
+</code></pre>
+  </div>
+
+
+<p>Теперь наш код компилируется и печатает в терминал то, что мы хотим.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #4...  
+r4 = S[ #4 delta ]  
+r4 = S[ #4 delta (upd.) ]
+</code></pre></div><p>В принципе, мы уже получили рабочий код. Но кое-что можно еще улучшить.</p>
+<p>Универсальная ссылка <code>T &amp;&amp;</code> в качестве аргумента функции позволяет реализовать оптимальную передачу параметра в двух случаях одновременно.</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="729518346" type="checkbox"  />
+    <label for="729518346">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">std::remove_cv</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+S s { 1, &#34;alpha&#34; };
+auto r1 = makeRestorable(s);
+// функция ведет себя, как если бы она имела вид makeRestorable(const S &amp;);
+
+auto r2 = makeRestorable(S { 2, &#34;beta&#34; });
+// функция ведет себя, как если бы она имела вид makeRestorable(S);
+</code></pre>
+  </div>
+
+
+<p><em>Обычно в таких случаях говорят об <strong>lvalue</strong> и <strong>rvalue</strong>, но об этом как-нибудь в следующий раз.</em> Реализация через универсальную ссылку часто позволяет избежать избыточных копирований объектов.</p>
+<p>Мы хотим передать объект <code>S s { 1, &quot;alpha&quot; }</code> в функцию по ссылке, но при этом внутри нее ожидаем от параметра поведения, как будто бы он был передан по значению. Для этого в стандартную библиотеку была введена метафункция <code>std::decay</code>. Независимо от того, как был передан в функцию объект обобщенного типа, она преобразует тип в удобную для большинства ситуаций форму.</p>
+<p>Уточню. Почти для всех типов <code>T</code>метафункция <code>std::decay&lt;T&gt;</code> фактически <del>делает харакири</del> удаляет из типа ссылки и const/volatile, как в нашей последней реализации. Исключениями являются функциональные типы и массивы в C-стиле. Для них <code>std::decay</code> производит низведение <em>(decay)</em> к указателю:</p>
+<ul>
+<li><code>int (double)</code> ➞ <code>int (*)(double)</code>;</li>
+<li><code>int [3]</code> ➞ <code>int *</code>.</li>
+</ul>
+<p>Почему такие странные исключения? Если говорить кратко, виной тому наследие языка C. Это стандартная интерпретация этих типов. Почти в любом контексте компиляторы негласно производят для них низведение. Например, при передаче объектов функциональных типов и C-массивов в функцию по значению</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="246871395" type="checkbox"  />
+    <label for="246871395">
+      <span class="collapsable-code__language">cpp</span>
+      
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+std::cout
+	&lt;&lt; std::boolalpha
+	&lt;&lt; std::is_same_v&lt;void (int ()), void (int (*)())&gt; &lt;&lt; &#39;\n&#39;
+	&lt;&lt; std::is_same_v&lt;void (int [3]), void (int *)&gt; &lt;&lt; &#39;\n&#39;;
+
+// выведет:
+// true
+// true
+</code></pre>
+  </div>
+
+
+<p>На мой взгляд, использование <code>std::decay</code> для функций <code>makeRestorable</code> и <code>makeEntity</code> является более концептуальным и лаконичным. Итоговый вариант реализации функций:</p>
+
+
+
+  <div class="collapsable-code">
+    <input id="391457286" type="checkbox"  />
+    <label for="391457286">
+      <span class="collapsable-code__language">cpp</span>
+      <span class="collapsable-code__title">std::decay</span>
+      <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
+    </label>
+    <pre class="language-cpp" ><code>
+template&lt;typename T&gt;
+Restorable&lt;std::decay_t&lt;T&gt;&gt; makeRestorable(T&amp;&amp; sample) {
+	sample.save();
+	return Restorable&lt;std::decay_t&lt;T&gt;&gt;(std::forward&lt;T&gt;(sample));
+}
+
+template&lt;typename T&gt;
+std::unique_ptr&lt;Entity&gt; makeEntity(T&amp;&amp; sample) {
+	return std::make_unique&lt;Restorable&lt;std::decay_t&lt;T&gt;&gt;&gt;(makeRestorable(std::forward&lt;T&gt;(sample)));
+}
+</code></pre>
+  </div>
+
+
+<h2 id="дополнительные-материалы">
+  Дополнительные материалы
+  <a href="#%d0%b4%d0%be%d0%bf%d0%be%d0%bb%d0%bd%d0%b8%d1%82%d0%b5%d0%bb%d1%8c%d0%bd%d1%8b%d0%b5-%d0%bc%d0%b0%d1%82%d0%b5%d1%80%d0%b8%d0%b0%d0%bb%d1%8b" class="h-anchor" aria-hidden="true">#</a>
+</h2>
+<p><a href="tmpl_ref.cpp">Файл с рабочим исходным кодом (C++17)</a></p>
+
+    </div>
+    
+
+    
+      
+    
+  </div>
+
+      </div>
+
+      
+        <footer class="footer">
+  <div class="footer__inner">
+    
+      <div class="copyright copyright--user">b1umx</div>
+      
+  </div>
+</footer>
+
+<script src="https://b1umx.ru/assets/main.js"></script>
+<script src="https://b1umx.ru/assets/prism.js"></script>
+
+
+      
+    </div>
+
+    
+  </body>
+</html>
