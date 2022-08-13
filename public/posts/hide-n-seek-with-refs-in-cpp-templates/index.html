@@ -177,8 +177,8 @@
 
 
   <div class="collapsable-code">
-    <input id="128349765" type="checkbox"  />
-    <label for="128349765">
+    <input id="964532781" type="checkbox"  />
+    <label for="964532781">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">Restorable</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -238,8 +238,8 @@ private:
 
 
   <div class="collapsable-code">
-    <input id="942718365" type="checkbox"  />
-    <label for="942718365">
+    <input id="897452613" type="checkbox"  />
+    <label for="897452613">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">make-функции</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -264,8 +264,8 @@ std::unique_ptr&lt;Entity&gt; makeEntity(T &amp;&amp;sample) {
 
 
   <div class="collapsable-code">
-    <input id="837291645" type="checkbox"  />
-    <label for="837291645">
+    <input id="216459387" type="checkbox"  />
+    <label for="216459387">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -306,20 +306,20 @@ int main() {
 
 
 <p>Вывод программы вас удивит, если вы не закаленный шаблонами программист. По какой-то загадочной причине после создания <code>r2</code> изменилось значение в <code>r1</code>.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #1...  
-r1 = S[ #1 alpha ]  
-Сохраняю S #2...  
-r2 = S[ #2 beta ]  
-  
-r1 = S[ #2 beta ]  
-r2 = S[ #2 beta ]
-</code></pre></div><p>Давайте еще усугубим ситуацию. Представим, что нам надо реализовать загрузку объектов по сети. Смоделируем это поведение с помощью своеобразной функции <code>loadEntity</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Сохраняю S #1...  
+</span></span><span style="display:flex;"><span>r1 = S[ #1 alpha ]  
+</span></span><span style="display:flex;"><span>Сохраняю S #2...  
+</span></span><span style="display:flex;"><span>r2 = S[ #2 beta ]  
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>r1 = S[ #2 beta ]  
+</span></span><span style="display:flex;"><span>r2 = S[ #2 beta ]
+</span></span></code></pre></div><p>Давайте еще усугубим ситуацию. Представим, что нам надо реализовать загрузку объектов по сети. Смоделируем это поведение с помощью своеобразной функции <code>loadEntity</code>.</p>
 
 
 
   <div class="collapsable-code">
-    <input id="985617342" type="checkbox"  />
-    <label for="985617342">
+    <input id="976231548" type="checkbox"  />
+    <label for="976231548">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -341,16 +341,16 @@ int main() {
 
 
 <p>Вот и обещанный сегфолт!</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">...
-Сохраняю S #3...
-zsh: segmentation fault (core dumped)  ./tmpl_ref
-</code></pre></div><p>В чем же причина такого поведения? Взглянем еще раз на пример с <code>r1</code> и <code>r2</code>. После создания <code>r2</code>, а точнее после присвоения нового значения переменной <code>s</code> изменилось и значение внутри <code>r1</code>. Интуиция может подсказать, что в деле замешаны ссылки. Давайте проверим нашу гипотезу. Проанализируем инстанцированный тип объекта <code>r1</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>...
+</span></span><span style="display:flex;"><span>Сохраняю S #3...
+</span></span><span style="display:flex;"><span>zsh: segmentation fault (core dumped)  ./tmpl_ref
+</span></span></code></pre></div><p>В чем же причина такого поведения? Взглянем еще раз на пример с <code>r1</code> и <code>r2</code>. После создания <code>r2</code>, а точнее после присвоения нового значения переменной <code>s</code> изменилось и значение внутри <code>r1</code>. Интуиция может подсказать, что в деле замешаны ссылки. Давайте проверим нашу гипотезу. Проанализируем инстанцированный тип объекта <code>r1</code>.</p>
 
 
 
   <div class="collapsable-code">
-    <input id="716325948" type="checkbox"  />
-    <label for="716325948">
+    <input id="865742193" type="checkbox"  />
+    <label for="865742193">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -382,8 +382,8 @@ int main() {
 
 
   <div class="collapsable-code">
-    <input id="371862594" type="checkbox"  />
-    <label for="371862594">
+    <input id="326815947" type="checkbox"  />
+    <label for="326815947">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">std::remove_reference</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -404,23 +404,23 @@ std::unique_ptr&lt;Entity&gt; makeEntity(T&amp;&amp; sample) {
 
 
 <p>После запуска обновленной программы, терминал нам покажет следующий вывод</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #1...  
-r1 = S[ #1 alpha ]  
-Сохраняю S #2...  
-r2 = S[ #2 beta ]  
-  
-r1 = S[ #1 alpha ]  
-r2 = S[ #2 beta ]  
-  
-Сохраняю S #3...  
-r3 = S[ #3 gamma ]
-</code></pre></div><p>Победа! Но полная ли? Что если мы недавно прочитали &ldquo;Эффективное использование C++&rdquo; Скотта Мэйерса и помним правило 3: везде использовать <code>const</code>? А тут еще и осадочек остался после работы с изменяемой переменной <code>s</code> из предыдущего примера.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Сохраняю S #1...  
+</span></span><span style="display:flex;"><span>r1 = S[ #1 alpha ]  
+</span></span><span style="display:flex;"><span>Сохраняю S #2...  
+</span></span><span style="display:flex;"><span>r2 = S[ #2 beta ]  
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>r1 = S[ #1 alpha ]  
+</span></span><span style="display:flex;"><span>r2 = S[ #2 beta ]  
+</span></span><span style="display:flex;"><span>  
+</span></span><span style="display:flex;"><span>Сохраняю S #3...  
+</span></span><span style="display:flex;"><span>r3 = S[ #3 gamma ]
+</span></span></code></pre></div><p>Победа! Но полная ли? Что если мы недавно прочитали &ldquo;Эффективное использование C++&rdquo; Скотта Мэйерса и помним правило 3: везде использовать <code>const</code>? А тут еще и осадочек остался после работы с изменяемой переменной <code>s</code> из предыдущего примера.</p>
 
 
 
   <div class="collapsable-code">
-    <input id="864231597" type="checkbox"  />
-    <label for="864231597">
+    <input id="256491873" type="checkbox"  />
+    <label for="256491873">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -441,18 +441,18 @@ int main() {
 
 
 <p>Компилятор спешит вас разочаровать огромной простыней ошибок. Самая суть в этих строчках</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">decay.cpp: In function ‘int main()’:  
-decay.cpp:176:49: error: no match for ‘operator=’ (operand types are ‘const string’ {aka ‘const std::__cxx11::basic_string&lt;char&gt;’} a  
-nd ‘std::string’ {aka ‘std::__cxx11::basic_string&lt;char&gt;’})  
- 176 |     r4.value().name = std::string(&#34;delta (upd.)&#34;);  
-     |
-</code></pre></div><p>Мы не можем присвоить <code>const</code> члену объекта новое значение. Оказывается, обобщенный тип <code>T</code> может вычисляться не только как ссылка на тип, но и как неизменный объект <code>[T = const S]</code>.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>decay.cpp: In function ‘int main()’:  
+</span></span><span style="display:flex;"><span>decay.cpp:176:49: error: no match for ‘operator=’ (operand types are ‘const string’ {aka ‘const std::__cxx11::basic_string&lt;char&gt;’} a  
+</span></span><span style="display:flex;"><span>nd ‘std::string’ {aka ‘std::__cxx11::basic_string&lt;char&gt;’})  
+</span></span><span style="display:flex;"><span> 176 |     r4.value().name = std::string(&#34;delta (upd.)&#34;);  
+</span></span><span style="display:flex;"><span>     |
+</span></span></code></pre></div><p>Мы не можем присвоить <code>const</code> члену объекта новое значение. Оказывается, обобщенный тип <code>T</code> может вычисляться не только как ссылка на тип, но и как неизменный объект <code>[T = const S]</code>.</p>
 
 
 
   <div class="collapsable-code">
-    <input id="324795681" type="checkbox"  />
-    <label for="324795681">
+    <input id="512369874" type="checkbox"  />
+    <label for="512369874">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -481,8 +481,8 @@ int main() {
 
 
   <div class="collapsable-code">
-    <input id="128694753" type="checkbox"  />
-    <label for="128694753">
+    <input id="476531298" type="checkbox"  />
+    <label for="476531298">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">std::remove_cv</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -503,17 +503,17 @@ std::unique_ptr&lt;Entity&gt; makeEntity(T&amp;&amp; sample) {
 
 
 <p>Теперь наш код компилируется и печатает в терминал то, что мы хотим.</p>
-<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4"><code class="language-txt" data-lang="txt">Сохраняю S #4...  
-r4 = S[ #4 delta ]  
-r4 = S[ #4 delta (upd.) ]
-</code></pre></div><p>В принципе, мы уже получили рабочий код. Но кое-что можно еще улучшить.</p>
+<div class="highlight"><pre tabindex="0" style="color:#f8f8f2;background-color:#272822;-moz-tab-size:4;-o-tab-size:4;tab-size:4;"><code class="language-txt" data-lang="txt"><span style="display:flex;"><span>Сохраняю S #4...  
+</span></span><span style="display:flex;"><span>r4 = S[ #4 delta ]  
+</span></span><span style="display:flex;"><span>r4 = S[ #4 delta (upd.) ]
+</span></span></code></pre></div><p>В принципе, мы уже получили рабочий код. Но кое-что можно еще улучшить.</p>
 <p>Универсальная ссылка <code>T &amp;&amp;</code> в качестве аргумента функции позволяет реализовать оптимальную передачу параметра в двух случаях одновременно.</p>
 
 
 
   <div class="collapsable-code">
-    <input id="729518346" type="checkbox"  />
-    <label for="729518346">
+    <input id="531879642" type="checkbox"  />
+    <label for="531879642">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">std::remove_cv</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -541,8 +541,8 @@ auto r2 = makeRestorable(S { 2, &#34;beta&#34; });
 
 
   <div class="collapsable-code">
-    <input id="246871395" type="checkbox"  />
-    <label for="246871395">
+    <input id="823164579" type="checkbox"  />
+    <label for="823164579">
       <span class="collapsable-code__language">cpp</span>
       
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
@@ -565,8 +565,8 @@ std::cout
 
 
   <div class="collapsable-code">
-    <input id="391457286" type="checkbox"  />
-    <label for="391457286">
+    <input id="718935246" type="checkbox"  />
+    <label for="718935246">
       <span class="collapsable-code__language">cpp</span>
       <span class="collapsable-code__title">std::decay</span>
       <span class="collapsable-code__toggle" data-label-expand="△" data-label-collapse="▽"></span>
